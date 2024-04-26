@@ -1,9 +1,8 @@
 from django.shortcuts import render, HttpResponse
 from .models import TodoItem
-# Create your views here.
 
-def login(request):
-    return render(request, "login.html")
+
+# Create your views here.
 
 def todos(request):
     items = TodoItem.objects.all()
