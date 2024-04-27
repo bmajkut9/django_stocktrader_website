@@ -1,4 +1,26 @@
-{% extends "base.html" %} {% block title %} Home Page {% endblock %}
+{% extends "base.html" %} {% block title %} Login {% endblock %}
 {% block content %}
-<p>!!! Login !!!</p>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 d-flex flex-column border">
+            <div class="my-auto">
+                <div class="flex-container" style="width: fit-content; margin-left: auto; margin-right: auto">
+                    <h6>Begin learning with</h6>
+                    <h1 style="text-align: center; color: #FFE07D;">Paper Paradise</h1>
+                </div>
+                <div class="flex-container" style="margin-left: auto; margin-right: auto; border: 4px solid #FFE07D; border-radius: 20px; height: 350px; width: 500px;">
+                    <div class="d-flex flex-column justify-content-center border w-100 h-100" style="padding-left: 30px; padding-right: 30px;">
+                        <h5>Username</h5>
+                        <input type="text" class="form-control" placeholder="Enter text">
+                        <h5>Password</h5>
+                        <input type="password" class="form-control" placeholder="Password">
+                        <button class="btn w-100" style="background-color: #FFE07D;" type="submit">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
