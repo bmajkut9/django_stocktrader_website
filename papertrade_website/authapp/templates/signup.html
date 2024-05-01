@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %} Login {% endblock %}
+{% extends "base.html" %} {% block title %} Sign up {% endblock %}
 {% block content %}
 
 <div class="container">
@@ -12,16 +12,20 @@
             <div class="d-flex flex-column justify-content-center w-100 h-100"
                 style="padding-left: 30px; padding-right: 30px;">
                 <form class="form-group" method="POST">
-                    {{form}}
+                    {% csrf_token %}
                     <p>Username</p>
-                    <input type="text" class="form-control" placeholder="Username or email">
+                    <input type="text" name="username" class="form-control"
+                        value="{{ form.username.value|default_if_none:'' }}" placeholder="Username or email">
+                    <p>{{ form.username.errors }}</p>
                     <p>Password</p>
-                    <input type="password" class="form-control" placeholder="Password">
-                    <input type="password" class="form-control" placeholder="Confirm password">
+                    <input type="password" name="password1" class="form-control" placeholder="Password">
+                    <p>{{ form.password1.errors }}</p>
+                    <input type="password" name="password2" class="form-control" placeholder="Confirm password">
+                    <p>{{ form.password2.errors }}</p>
                     <div class="border"
                         style="width: 300px; margin-left: auto; margin-right: auto; margin-top: 30px; margin-bottom: 30px;">
                     </div>
-                    <a class="btn w-100" style="background-color: #FFE07D;" type="submit" href="/home/">Sign up</a>
+                    <button class="btn w-100" type="submit" style="background-color: #FFE07D;">Sign up</button>
                 </form>
             </div>
         </div>
