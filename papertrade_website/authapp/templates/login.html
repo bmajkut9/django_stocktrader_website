@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %} Login {% endblock %} 
+{% extends "base.html" %} {% block title %} Login {% endblock %}
 {% block content %}
 
 <div class="container">
@@ -20,10 +20,15 @@
                     <div class="d-flex flex-column justify-content-center w-100 h-100"
                         style="padding-left: 30px; padding-right: 30px">
                         <form class="form-group" method="POST">
+                            {% csrf_token %}
                             <p>Username</p>
-                            <input type="text" class="form-control" placeholder="Username or email" />
+                            <input type="text" name="username" class="form-control"
+                                value="{{ username|default_if_none:'' }}" placeholder="Username or email" />
                             <p>Password</p>
-                            <input type="password" class="form-control" placeholder="Password" />
+                            <input type="password" name="password" class="form-control" value="{{ username|default_if_none:'' }}" placeholder="Password" />
+                            {% if error_message %}
+                            <p>{{ error_message }}</p>
+                            {% endif %}
                             <div class="border" style="
                                 width: 300px;
                                 margin-left: auto;
@@ -31,8 +36,8 @@
                                 margin-top: 30px;
                                 margin-bottom: 30px;
                                 "></div>
-                            <a class="btn w-100" style="background-color: #ffe07d" type="submit" href="/home/">Log
-                                in</a>
+                            <button class="btn w-100" style="background-color: #ffe07d" type="submit">Log
+                                in</button>
                         </form>
                     </div>
                 </div>
