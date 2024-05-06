@@ -1,6 +1,21 @@
 {% extends "base.html" %} {% block title %} Home {% endblock %} 
 {% block content %}
 
-<h1>Home Page</h1>
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="column">
+                <div class="container" style="background-color: azure;">
+                    {% for loser in losers %}
+                    <h1>Ticker: {{loser.ticker}} Change: {{loser.change_percentage}}</h1>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
 
 {% endblock %}
