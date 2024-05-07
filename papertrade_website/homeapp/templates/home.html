@@ -1,21 +1,46 @@
-{% extends "base.html" %} {% block title %} Home {% endblock %} 
+{% extends "base.html" %} {% block title %} Home {% endblock %}
 {% block content %}
 
 <!DOCTYPE html>
 <html>
+
 <body>
     <div class="container">
         <div class="row">
             <div class="column">
-                <div class="container" style="background-color: azure;">
-                    {% for loser in losers %}
-                    <h1>Ticker: {{loser.ticker}} Change: {{loser.change_percentage}}</h1>
-                    {% endfor %}
+                <div class="container border" style="border-width: 3px !important; border-radius: 20px;">
+                    <p>Biggest Changes</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Ticker</th>
+                                <th scope="col">% Change</th>
+                                <th scope="col">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loser in losers %}
+                            <tr>
+                                <th scope="row">{{loser.ticker}}</th>
+                                <td>{{loser.change_percentage}}</td>
+                                <td></td>
+                            </tr>
+                            {% endfor %}
+                            {% for winner in winners %}
+                            <tr>
+                                <th scope="row">{{winner.ticker}}</th>
+                                <td>{{winner.change_percentage}}</td>
+                                <td></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
 
 {% endblock %}

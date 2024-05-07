@@ -13,6 +13,7 @@ def home(request):
     data = r.json()
     gainers_data = data.get('top_gainers', [])
     losers_data = data.get('top_losers', [])
+    print("ready")
     
     for gainer in gainers_data[:10]:
         gainer_data = []
@@ -22,6 +23,7 @@ def home(request):
         gainer_data.append(gainer_change_percentage)
         
         gainers.append(gainer_data)
+    print("gainers:", gainers)
         
     for loser in losers_data [:10]:
         loser_data = {}
@@ -32,8 +34,11 @@ def home(request):
         loser_data["change_percentage"] = loser_change_percentage
                 
         losers.append(loser_data)
+    print("losers", losers)
     
-    
+    print("API Response Status Code:", r.status_code)
+    print("Raw API Response:", data)
+
     
     if request.user.is_authenticated:
         return render(request, "home.html", {"gainers": gainers, "losers": losers})
