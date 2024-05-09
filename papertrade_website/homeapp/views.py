@@ -4,31 +4,44 @@ from django.shortcuts import render, redirect
 # Create your views here.
 
 def home(request):
-    API_KEY = "9K40A1BBDYXSDIM8"
-    url = "https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=" + API_KEY
+    gainers_url = "https://financial-modeling-prep.p.rapidapi.com/v3/stock_market/gainers"
+    gainers_headers = {
+        "X-RapidAPI-Key": "2daf8d998cmsh05df2a294110463p1bc9fbjsnbc6f35ce07c0",
+        "X-RapidAPI-Host": "financial-modeling-prep.p.rapidapi.com"
+    }
+    
+    gainers_r = requests.get(gainers_url, headers=gainers_headers)
+
+    losers_url = "https://financial-modeling-prep.p.rapidapi.com/v3/stock_market/losers"
+    losers_headers = {
+        "X-RapidAPI-Key": "2daf8d998cmsh05df2a294110463p1bc9fbjsnbc6f35ce07c0",
+        "X-RapidAPI-Host": "financial-modeling-prep.p.rapidapi.com"
+    }
+    
+    losers_r = requests.get(losers_url, headers=losers_headers)
+
     gainers = []
     losers = []
     
-    r = requests.get(url)
-    data = r.json()
-    gainers_data = data.get('top_gainers', [])
-    losers_data = data.get('top_losers', [])
+    gainers_data = gainers_r.json()
+    losers_data = losers_r.json()
     print("ready")
     
     for gainer in gainers_data[:10]:
-        gainer_data = []
-        gainer_ticker = gainer.get("ticker", "N/A")
-        gainer_data.append(gainer_ticker)
-        gainer_change_percentage = gainer.get("change_percentage", "N/A")
-        gainer_data.append(gainer_change_percentage)
+        gainer_data = {}
+        gainer_ticker = gainer.get("symbol", "N/A")
+        gainer_change_percentage = gainer.get("changesPercentage", "N/A")
+        
+        gainer_data["ticker"] = gainer_ticker
+        gainer_data["change_percentage"] = gainer_change_percentage
         
         gainers.append(gainer_data)
     print("gainers:", gainers)
         
     for loser in losers_data [:10]:
         loser_data = {}
-        loser_ticker = loser.get("ticker", "N/A")
-        loser_change_percentage = loser.get("change_percentage", "N/A")
+        loser_ticker = loser.get("symbol", "N/A")
+        loser_change_percentage = loser.get("changesPercentage", "N/A")
         
         loser_data["ticker"] = loser_ticker
         loser_data["change_percentage"] = loser_change_percentage
@@ -36,9 +49,7 @@ def home(request):
         losers.append(loser_data)
     print("losers", losers)
     
-    print("API Response Status Code:", r.status_code)
-    print("Raw API Response:", data)
-
+    print("API Response Status Code:", gainers_r.status_code, losers_r.status_code)
     
     if request.user.is_authenticated:
         return render(request, "home.html", {"gainers": gainers, "losers": losers})

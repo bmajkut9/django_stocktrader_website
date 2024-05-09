@@ -9,7 +9,16 @@
         <div class="row">
             <div class="column">
                 <div class="container border" style="border-width: 3px !important; border-radius: 20px;">
-                    <p>Biggest Changes</p>
+                    <div class="dropdown" style="display: flex; justify-content: center; width: 100%; margin-top: 15px; margin-bottom: 15px;">
+                        <button class="btn dropdown-toggle" style="background-color: #dee2e6;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Most Traded
+                        </button>
+                        <div class="dropdown-menu border" style="margin-left: auto; margin-right: auto;" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item">Biggest Gainers</a>
+                          <a class="dropdown-item">Biggest Losers</a>
+                          <a class="dropdown-item">Most Traded</a>
+                        </div>
+                      </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -26,10 +35,10 @@
                                 <td></td>
                             </tr>
                             {% endfor %}
-                            {% for winner in winners %}
+                            {% for gainer in gainers %}
                             <tr>
-                                <th scope="row">{{winner.ticker}}</th>
-                                <td>{{winner.change_percentage}}</td>
+                                <th scope="row">{{gainer.ticker}}</th>
+                                <td>{{gainer.change_percentage}}</td>
                                 <td></td>
                             </tr>
                             {% endfor %}
