@@ -4,21 +4,55 @@
 <!DOCTYPE html>
 <html>
 
+<script>
+function showData(type, text) {
+    document.getElementById('gainers').style.display = 'none';
+    document.getElementById('losers').style.display = 'none';
+    document.getElementById('mostActive').style.display = 'none';
+
+    document.getElementById(type).style.display = '';
+    document.getElementById('dropdownMenuButton').textContent = text;
+}
+</script>
+<style>
+    .triangle-up {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 20px solid green;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .triangle-down {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 20px solid red;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
 <body>
     <div class="container">
         <div class="row">
             <div class="column">
                 <div class="container border" style="border-width: 3px !important; border-radius: 20px;">
-                    <div class="dropdown" style="display: flex; justify-content: center; width: 100%; margin-top: 15px; margin-bottom: 15px;">
-                        <button class="btn dropdown-toggle" style="background-color: #dee2e6;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Most Traded
+                    <div class="dropdown"
+                        style="display: flex; justify-content: center; width: 100%; margin-top: 15px; margin-bottom: 15px;">
+                        <button class="btn dropdown-toggle" style="background-color: #dee2e6;" type="button"
+                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Most Active
                         </button>
-                        <div class="dropdown-menu border" style="margin-left: auto; margin-right: auto;" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item">Biggest Gainers</a>
-                          <a class="dropdown-item">Biggest Losers</a>
-                          <a class="dropdown-item">Most Traded</a>
+                        <div class="dropdown-menu" style="margin-left: auto; margin-right: auto;"
+                            aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" onclick="showData('gainers', 'Biggest Gainers')">Biggest Gainers</a>
+                            <a class="dropdown-item" onclick="showData('losers', 'Biggest Losers')">Biggest Losers</a>
+                            <a class="dropdown-item" onclick="showData('mostActive', 'Most Active')">Most Active</a>
                         </div>
-                      </div>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -27,19 +61,36 @@
                                 <th scope="col">Trend</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for loser in losers %}
-                            <tr>
-                                <th scope="row">{{loser.ticker}}</th>
-                                <td>{{loser.change_percentage}}</td>
-                                <td></td>
-                            </tr>
-                            {% endfor %}
+                        <tbody id="gainers" style="display: none;">
                             {% for gainer in gainers %}
                             <tr>
-                                <th scope="row">{{gainer.ticker}}</th>
+                                <th scope="row">{{gainer.symbol}}</th>
                                 <td>{{gainer.change_percentage}}</td>
-                                <td></td>
+                                <td><div class="triangle-up"></div></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tbody id="losers" style="display: none;">
+                            {% for loser in losers %}
+                            <tr>
+                                <th scope="row">{{loser.symbol}}</th>
+                                <td>{{loser.change_percentage}}</td>
+                                <td><div class="triangle-down"></div></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tbody id="mostActive">
+                            {% for active in mostActive %}
+                            <tr>
+                                <th scope="row">{{active.symbol}}</th>
+                                <td>{{active.change_percentage}}</td>
+                                <td>{% if active.change_percentage >= 0 %}
+                                    <div class="triangle-up"></div>
+                                    {% else %}
+                                    <div class="triangle-down"></div>
+                                    {% endif %}
+                                </td>
+
                             </tr>
                             {% endfor %}
                         </tbody>
