@@ -1,10 +1,11 @@
 import requests
+from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
 
 # Create your views here.
 
 def home(request):
-    
+    """
     gainers_url = "https://financial-modeling-prep.p.rapidapi.com/v3/stock_market/gainers"
     gainers_headers = {
         "X-RapidAPI-Key": "2daf8d998cmsh05df2a294110463p1bc9fbjsnbc6f35ce07c0",
@@ -20,7 +21,7 @@ def home(request):
     }
     
     losers_r = requests.get(losers_url, headers=losers_headers)
-    
+    """
     mostActive_url = "https://financial-modeling-prep.p.rapidapi.com/v3/stock_market/actives"
 
     mostActive_headers = {
@@ -36,6 +37,8 @@ def home(request):
     mostActive = []
     
     
+    mostActive_data = mostActive_r.json()
+    """
     gainers_data = gainers_r.json()
     losers_data = losers_r.json()
     mostActive_data = mostActive_r.json()
@@ -62,7 +65,7 @@ def home(request):
                 
         losers.append(loser_data)
     print("losers", losers)
-
+    """
     for active in mostActive_data[:10]:
         active_data = {}
         active_ticker = active.get("symbol", "N/A")
@@ -72,12 +75,40 @@ def home(request):
         active_data["change_percentage"] = active_change_percentage
         
         mostActive.append(active_data)
-    print("mostActive:", mostActive)
+
+        
+    news_url = "https://finance.yahoo.com/"
+    news_html = requests.get(news_url)
+    
+    articles = []
+    
+    news_s = BeautifulSoup(news_html.content, "html.parser")
+    news_results = news_s.find_all(attrs={"data-testid": "storyitem"})
+    
+    for result in news_results[:3]:
+        current_article = {}
+        
+        news_info = result.find("a")
+        news_img_tag = result.find("img")
+        
+        if news_info:
+            news_title = news_info.get("title")
+            current_article["title"] = news_title
+            
+            news_link = news_info.get("href")
+            current_article["link"] = news_link
+            
+            news_image = news_img_tag.get("src")
+            current_article["image"] = news_image
+            
+            articles.append(current_article)
+    
+    print("All articles", articles)
+            
     
     
-    """print("API Response Status Code:", gainers_r.status_code, losers_r.status_code, mostActive_r.status_code)"""
-    
+
     if request.user.is_authenticated:
-        return render(request, "home.html", {"gainers": gainers, "losers": losers, "mostActive": mostActive})
+        return render(request, "home.html", {"gainers": gainers, "losers": losers, "mostActive": mostActive, "articles": articles})
     else:
         return redirect("login")
