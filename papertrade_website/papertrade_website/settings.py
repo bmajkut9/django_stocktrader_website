@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "navbarapp",
     "authapp",
     "homeapp",
+    "investments",
 ]
 
 MIDDLEWARE = [
