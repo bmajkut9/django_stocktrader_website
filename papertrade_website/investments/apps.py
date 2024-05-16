@@ -7,3 +7,4 @@ class InvestmentsConfig(AppConfig):
     
     def ready(self):
         import investments.signals
+
