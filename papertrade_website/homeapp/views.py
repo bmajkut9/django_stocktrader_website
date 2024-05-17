@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
+from django.db.models import Sum
+from investments.models import BuyStockHistory
 
 # Create your views here.
 
@@ -39,9 +41,12 @@ def home(request):
     print("All articles", articles)
             
     
-    
+    investment_assets = BuyStockHistory.objects.filter(user = request.user).aggregate(total_investment=Sum('stock_value_amount'))['total_investment']
+    if not investment_assets:
+        investment_assets = 0
+        
 
     if request.user.is_authenticated:
-        return render(request, "home.html", {"gainers": gainers, "losers": losers, "mostActive": mostActive, "articles": articles})
+        return render(request, "home.html", {"investment_assets": investment_assets, "gainers": gainers, "losers": losers, "mostActive": mostActive, "articles": articles})
     else:
         return redirect("login")
