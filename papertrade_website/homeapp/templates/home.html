@@ -2,7 +2,9 @@
 {% block content %}
 
 <script>
-    function showData(type, text) {
+    function show
+    
+    (type, text) {
         document.getElementById('gainers').style.display = 'none';
         document.getElementById('losers').style.display = 'none';
         document.getElementById('mostActive').style.display = 'none';
@@ -45,7 +47,7 @@
                 <h3 style="margin-left: 10px">2.61%</h3>
                 <div class="triangle-up" style="margin-left: 5px; margin-bottom: auto;"></div>
             </div>
-            <div> 
+            <div>
                 <canvas style="width: 100%" id="myChart"></canvas>
             </div>
             <div style="height: 20px;"></div>
@@ -53,10 +55,12 @@
             <div class="row">
                 {% for article in articles %}
                 <a href="{{article.link}}">
-                    <div class="container border" style="width: 200px; margin-left: 20px; margin-right: 20px; justify-content: center;">
+                    <div class="container border"
+                        style="width: 200px; margin-left: 20px; margin-right: 20px; justify-content: center;">
                         <div class="col" style="justify-content: center;">
                             <div class="container border" style="width: 100%; height: 100px; border-radius: 10px;">
-                                <img src="{{article.image}}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                                <img src="{{article.image}}"
+                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                             </div>
                             <p class="title-text border">{{article.title}}</p>
                         </div>
@@ -134,21 +138,130 @@
     </div>
 </div>
 <script>
-    const ctx = document.getElementById('myChart');
+    const roundedBackgroundPlugin = {
+        id: 'roundedBackground',
+        beforeDraw: (chart) => {
+            const ctx = chart.ctx;
+            const chartArea = chart.chartArea;
+            const radius = 20; // Adjust the radius for the desired roundness
 
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; // Background color
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)'; // Border color
+            ctx.lineWidth = 2; // Border width
+
+            // Draw rounded rectangle
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left + radius, chartArea.top);
+            ctx.lineTo(chartArea.right - radius, chartArea.top);
+            ctx.quadraticCurveTo(chartArea.right, chartArea.top, chartArea.right, chartArea.top + radius);
+            ctx.lineTo(chartArea.right, chartArea.bottom - radius);
+            ctx.quadraticCurveTo(chartArea.right, chartArea.bottom, chartArea.right - radius, chartArea.bottom);
+            ctx.lineTo(chartArea.left + radius, chartArea.bottom);
+            ctx.quadraticCurveTo(chartArea.left, chartArea.bottom, chartArea.left, chartArea.bottom - radius);
+            ctx.lineTo(chartArea.left, chartArea.top + radius);
+            ctx.quadraticCurveTo(chartArea.left, chartArea.top, chartArea.left + radius, chartArea.top);
+            ctx.closePath();
+
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.lineWidth = 1;
+
+            const xGridLineCount = chart.scales.x.ticks.length;
+                for (let i = 1; i < xGridLineCount - 1; i++) {
+                    const x = chart.scales.x.getPixelForTick(i);
+                    ctx.beginPath();
+                    ctx.moveTo(x, chartArea.top);
+                    ctx.lineTo(x, chartArea.bottom);
+                    ctx.stroke();
+                }
+
+                // Draw y-axis grid lines
+                const yGridLineCount = chart.scales.y.ticks.length;
+                for (let i = 1; i < yGridLineCount - 1; i++) {
+                    const y = chart.scales.y.getPixelForTick(i);
+                    ctx.beginPath();
+                    ctx.moveTo(chartArea.left, y);
+                    ctx.lineTo(chartArea.right, y);
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+        }
+    };
+
+    // Register the plugin
+    Chart.register(roundedBackgroundPlugin);
+
+
+    const ctx = document.getElementById('myChart');
+    const dates = JSON.parse('{{ chart_dates|escapejs }}');
+    const cumulativeValues = JSON.parse('{{ cumulative_values|escapejs }}');
+    const chart_increment_type = JSON.parse('{{ chart_increment_type|escapejs }}')
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: dates,
             datasets: [{
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
+                label: 'Investments in USD',
+                data: cumulativeValues,
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBorderColor: 'rgba(75, 192, 192, 1)',
+                pointBorderWidth: 1,
+                pointRadius: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+                pointHoverBorderWidth: 2
             }]
         },
         options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            },
             scales: {
+                x: {
+                    type: time,
+                    time: {
+                        unit: chart_increment_type,
+                        stepSize: 1,
+                        min: minDate,
+                        max: maxDate,
+                    },
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    },
+                    grid: {
+                        display: false,
+                    },
+                    border: {
+                        display: false,
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Value $USD',
+                    },
+                    grid: {
+                        display: false,
+                    },
+                    border: {
+                        display: false,
+                    }
                 }
             }
         }
