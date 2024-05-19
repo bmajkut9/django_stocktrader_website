@@ -199,16 +199,16 @@
 
 
     const ctx = document.getElementById('myChart');
-    const dates = JSON.parse('{{ chart_dates|escapejs }}');
-    const cumulativeValues = JSON.parse('{{ cumulative_values|escapejs }}');
-    const chart_increment_type = JSON.parse('{{ chart_increment_type|escapejs }}')
+    const dates = JSON.parse('{{ chart_data.dates|escapejs }}');
+    const cumulativeValues = JSON.parse('{{ chart_data.cumulative_values|escapejs }}');
+    const chart_dates_config = JSON.parse('{{ chart_dates_config|escapejs }}')
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: dates,
+            labels: /*dates*/ ["2023-01-01", "2023-01-02", "2023-01-03"],
             datasets: [{
                 label: 'Investments in USD',
-                data: cumulativeValues,
+                data: /*cumulativeValues*/ [1000, 1500, 2000],
                 fill: false,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 tension: 0.4,
@@ -232,12 +232,12 @@
             scales: {
                 x: {
                     type: time,
-                    time: {
-                        unit: chart_increment_type,
+                    /*time: {
+                        unit: chart_dates_config.unit_type,
                         stepSize: 1,
-                        min: minDate,
-                        max: maxDate,
-                    },
+                        min: chart_dates_config.min_date,
+                        max: chart_dates_config.max_date,
+                    },*/
                     display: true,
                     title: {
                         display: true,
