@@ -1,4 +1,6 @@
 import requests
+import json
+from django.utils.safestring import mark_safe
 from datetime import timedelta
 from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
@@ -19,11 +21,11 @@ def get_date_range(user): # arg = request.user
         date_diff = (max_date - min_date).days
                 
         if date_diff <= 7:
-            unit_type = 'day'
+            unit_type = "day"
         elif date_diff <= 31:
-            unit_type = 'week'
+            unit_type = "week"
         else:
-            unit_type = 'month'
+            unit_type = "month"
         return min_date, max_date, unit_type
     
     else:
@@ -33,22 +35,22 @@ def get_date_range(user): # arg = request.user
 def aggregate_stock_values(user):
     data = {}
 
-    buy_data = BuyStockHistory.objects.filter(user=user).values('buy_date').annotate(total_value=Sum('stock_value_amount'))
-    sell_data = SellStockHistory.objects.filter(user=user).values('sell_date').annotate(total_value=Sum('stock_value_amount'))
+    buy_data = BuyStockHistory.objects.filter(user=user).values("buy_date").annotate(total_value=Sum("stock_value_amount"))
+    sell_data = SellStockHistory.objects.filter(user=user).values("sell_date").annotate(total_value=Sum("stock_value_amount"))
     
     for entry in buy_data:
-        date = entry['buy_date']
+        date = entry["buy_date"]
         if date in data:
-            data[date] += entry['total_value']
+            data[date] += entry["total_value"]
         else:
-            data[date] = entry['total_value']
+            data[date] = entry["total_value"]
         
     for entry in sell_data:
-        date = entry['sell_date']
+        date = entry["sell_date"]
         if date in data:
-            data[date] -= entry['total_value']
+            data[date] -= entry["total_value"]
         else:
-            data[date] = -entry['total_value']
+            data[date] = -entry["total_value"]
     
     sorted_data = dict(sorted(data.items()))
     return sorted_data 
@@ -65,11 +67,20 @@ def home(request):
     cumulative_value = 0
     
     for date in dates:
-        formatted_dates.append(date.strftime('%Y-%m-%d'))
+        formatted_dates.append(date.strftime("%m/%d/%Y"))
         cumulative_value += stock_values[date]
-        cumulative_values.append(cumulative_value)
+        cumulative_values.append(float(cumulative_value))
         
     chart_data = {"dates": formatted_dates, "cumulative_values": cumulative_values}
+    
+    chart_data_json = json.dumps(chart_data)
+    print("chart data json", chart_data_json)
+    
+    chart_data_json_safe = mark_safe(chart_data_json)
+    print("chart data safe", chart_data_json_safe)
+    
+    
+    
     
     gainers = []
     losers = []
@@ -105,7 +116,7 @@ def home(request):
     print("All articles", articles)
             
     # for total investments text display
-    investment_assets = BuyStockHistory.objects.filter(user = request.user).aggregate(total_investment=Sum('stock_value_amount'))['total_investment']
+    investment_assets = BuyStockHistory.objects.filter(user = request.user).aggregate(total_investment=Sum("stock_value_amount"))["total_investment"]
     if not investment_assets:
         investment_assets = 0
         
@@ -114,7 +125,7 @@ def home(request):
     if request.user.is_authenticated:
         return render(request, "home.html", {
             "chart_dates_config": chart_dates_config, 
-            "chart_data": chart_data, 
+            "chart_data": chart_data_json_safe, 
             "investment_assets": investment_assets, 
             "gainers": gainers, 
             "losers": losers, 

@@ -2,9 +2,7 @@
 {% block content %}
 
 <script>
-    function show
-    
-    (type, text) {
+    function showData(type, text) {
         document.getElementById('gainers').style.display = 'none';
         document.getElementById('losers').style.display = 'none';
         document.getElementById('mostActive').style.display = 'none';
@@ -138,6 +136,7 @@
     </div>
 </div>
 <script>
+
     const roundedBackgroundPlugin = {
         id: 'roundedBackground',
         beforeDraw: (chart) => {
@@ -172,43 +171,56 @@
             ctx.lineWidth = 1;
 
             const xGridLineCount = chart.scales.x.ticks.length;
-                for (let i = 1; i < xGridLineCount - 1; i++) {
-                    const x = chart.scales.x.getPixelForTick(i);
-                    ctx.beginPath();
-                    ctx.moveTo(x, chartArea.top);
-                    ctx.lineTo(x, chartArea.bottom);
-                    ctx.stroke();
-                }
+            for (let i = 1; i < xGridLineCount - 1; i++) {
+                const x = chart.scales.x.getPixelForTick(i);
+                ctx.beginPath();
+                ctx.moveTo(x, chartArea.top);
+                ctx.lineTo(x, chartArea.bottom);
+                ctx.stroke();
+            }
 
-                // Draw y-axis grid lines
-                const yGridLineCount = chart.scales.y.ticks.length;
-                for (let i = 1; i < yGridLineCount - 1; i++) {
-                    const y = chart.scales.y.getPixelForTick(i);
-                    ctx.beginPath();
-                    ctx.moveTo(chartArea.left, y);
-                    ctx.lineTo(chartArea.right, y);
-                    ctx.stroke();
-                }
+            // Draw y-axis grid lines
+            const yGridLineCount = chart.scales.y.ticks.length;
+            for (let i = 1; i < yGridLineCount - 1; i++) {
+                const y = chart.scales.y.getPixelForTick(i);
+                ctx.beginPath();
+                ctx.moveTo(chartArea.left, y);
+                ctx.lineTo(chartArea.right, y);
+                ctx.stroke();
+            }
 
-                ctx.restore();
+            ctx.restore();
         }
     };
 
     // Register the plugin
     Chart.register(roundedBackgroundPlugin);
 
-
     const ctx = document.getElementById('myChart');
-    const dates = JSON.parse('{{ chart_data.dates|escapejs }}');
-    const cumulativeValues = JSON.parse('{{ chart_data.cumulative_values|escapejs }}');
-    const chart_dates_config = JSON.parse('{{ chart_dates_config|escapejs }}')
+    /*console.log("{{ chart_data.dates }}");
+    console.log("{{chart_data}}");
+    const dates = JSON.parse("{{ chart_data.dates|safe }}");
+    console.log("dates are");
+    console.log(dates);*/
+    //const cumulativeValues = JSON.parse('{{ chart_data.cumulative_values|escapejs }}');
+    //console.log("values are")
+    //console.log(cumulativeValues)
+    const chartData = JSON.parse('{{ chart_data|safe }}');
+    console.log(chartData);
+
+    const dates = chartData.dates;
+    const cumulativeValues = chartData.cumulative_values;
+
+    console.log(dates);
+    console.log(cumulativeValues);
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: /*dates*/ ["2023-01-01", "2023-01-02", "2023-01-03"],
+            labels: dates,
             datasets: [{
                 label: 'Investments in USD',
-                data: /*cumulativeValues*/ [1000, 1500, 2000],
+                data: cumulativeValues,
                 fill: false,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 tension: 0.4,
@@ -219,7 +231,7 @@
                 pointHoverRadius: 5,
                 pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)',
                 pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-                pointHoverBorderWidth: 2
+                pointHoverBorderWidth: 2,
             }]
         },
         options: {
@@ -231,13 +243,6 @@
             },
             scales: {
                 x: {
-                    type: time,
-                    /*time: {
-                        unit: chart_dates_config.unit_type,
-                        stepSize: 1,
-                        min: chart_dates_config.min_date,
-                        max: chart_dates_config.max_date,
-                    },*/
                     display: true,
                     title: {
                         display: true,
@@ -266,6 +271,8 @@
             }
         }
     });
+
+
 </script>
 
 {% endblock %}
