@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta
 from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
 from investments.models import BuyStockHistory, SellStockHistory
 
@@ -35,8 +35,8 @@ def get_date_range(user): # arg = request.user
 def aggregate_stock_values(user):
     data = {}
 
-    buy_data = BuyStockHistory.objects.filter(user=user).values("buy_date").annotate(total_value=Sum("stock_value_amount"))
-    sell_data = SellStockHistory.objects.filter(user=user).values("sell_date").annotate(total_value=Sum("stock_value_amount"))
+    buy_data = BuyStockHistory.objects.filter(user=user).values("buy_date").annotate(total_value=Sum(F("stock_value_amount") * F("stock_purchased_count")))
+    sell_data = SellStockHistory.objects.filter(user=user).values("sell_date").annotate(total_value=Sum(F("stock_value_amount") * F("stock_sold_count")))
     
     for entry in buy_data:
         date = entry["buy_date"]
@@ -48,7 +48,7 @@ def aggregate_stock_values(user):
     for entry in sell_data:
         date = entry["sell_date"]
         if date in data:
-            data[date] -= entry["total_value"]
+            data[date] -= entry["total_value"] 
         else:
             data[date] = -entry["total_value"]
     
@@ -68,7 +68,7 @@ def home(request):
     
     for date in dates:
         formatted_dates.append(date.strftime("%m/%d/%Y"))
-        cumulative_value += stock_values[date]
+        cumulative_value += stock_values[date] 
         cumulative_values.append(float(cumulative_value))
         
     chart_data = {"dates": formatted_dates, "cumulative_values": cumulative_values}
@@ -114,11 +114,22 @@ def home(request):
             articles.append(current_article)
     
     print("All articles", articles)
-            
+    
+    investment_assets = {}
     # for total investments text display
-    investment_assets = BuyStockHistory.objects.filter(user = request.user).aggregate(total_investment=Sum("stock_value_amount"))["total_investment"]
-    if not investment_assets:
-        investment_assets = 0
+    investment_assets["total"] =int(BuyStockHistory.objects.filter(user = request.user).aggregate(total_investment=Sum("stock_value_amount"))["total_investment"] * 100) / 100
+    if not investment_assets["total"]:
+        investment_assets["total"] = 0
+    
+    if chart_data["cumulative_values"]:
+        if len(chart_data["cumulative_values"]) >= 2:
+            list_length = len(chart_data["cumulative_values"])
+            full_change_percentage = (chart_data["cumulative_values"][list_length - 1] - chart_data["cumulative_values"][list_length - 2]) / chart_data["cumulative_values"][list_length - 2] * 100
+            change_percentage_int = int(full_change_percentage * 100)
+            investment_assets["change_percentage"] = change_percentage_int / 100 
+            print(chart_data["cumulative_values"][list_length - 1], chart_data["cumulative_values"][list_length - 2])
+    else:
+        investment_assets["change_percentage"] = 0
         
     print(chart_data)
     print(chart_dates_config)

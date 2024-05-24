@@ -41,9 +41,17 @@
                 <h4>Your investments</h4>
             </div>
             <div class="row">
-                <h1>${{investment_assets}}</h1>
-                <h3 style="margin-left: 10px">2.61%</h3>
-                <div class="triangle-up" style="margin-left: 5px; margin-bottom: auto;"></div>
+                <h1>${{ investment_assets.total }}</h1>
+                <h3 style="margin-left: 10px">{{ investment_assets.change_percentage  }}%</h3>
+                {% if investment_assets.change_percentage > 0 %}
+                    <div class="triangle-up" style="margin-left: 5px; margin-bottom: auto;"></div> 
+                {% else %}
+                    {% if investment_assets.change_percentage < 0 %}
+                    <div class="triangle-down" style="margin-left: 5px; margin-bottom: auto;"></div>
+                    {% else %}
+                    <!-- no change percentage yet -->
+                    {% endif %}
+                {% endif %}
             </div>
             <div>
                 <canvas style="width: 100%" id="myChart"></canvas>
@@ -223,7 +231,6 @@
                 data: cumulativeValues,
                 fill: false,
                 borderColor: 'rgba(75, 192, 192, 1)',
-                tension: 0.4,
                 pointBackgroundColor: 'rgba(75, 192, 192, 1)',
                 pointBorderColor: 'rgba(75, 192, 192, 1)',
                 pointBorderWidth: 1,
@@ -245,8 +252,7 @@
                 x: {
                     display: true,
                     title: {
-                        display: true,
-                        text: 'Date'
+                        display: false,
                     },
                     grid: {
                         display: false,
