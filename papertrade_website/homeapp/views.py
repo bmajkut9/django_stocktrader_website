@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
 from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
-from investments.models import BuyStockHistory, SellStockHistory
+from investments.models import BuyStockHistory, SellStockHistory, StockAssets
 
 # Create your views here.
 
@@ -117,9 +117,9 @@ def home(request):
     
     investment_assets = {}
     # for total investments text display
-    investment_assets["total"] =int(BuyStockHistory.objects.filter(user = request.user).aggregate(total_investment=Sum("stock_value_amount"))["total_investment"] * 100) / 100
-    if not investment_assets["total"]:
-        investment_assets["total"] = 0
+    total_investment_result = StockAssets.objects.filter(user = request.user).aggregate(total_investment=Sum(F("stock_value_amount") * F("stock_count")) * 100 / 100)
+    total_investment_value = total_investment_result['total_investment'] or 0
+    investment_assets["total"] = total_investment_value
     
     if chart_data["cumulative_values"]:
         if len(chart_data["cumulative_values"]) >= 2:
