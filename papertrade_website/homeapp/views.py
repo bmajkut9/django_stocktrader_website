@@ -118,7 +118,7 @@ def home(request):
     investment_assets = {}
     # for total investments text display
     total_investment_result = StockAssets.objects.filter(user = request.user).aggregate(total_investment=Sum(F("stock_value_amount") * F("stock_count")) * 100 / 100)
-    total_investment_value = total_investment_result['total_investment'] or 0
+    total_investment_value = int(total_investment_result['total_investment'] * 100) / 100 or 0
     investment_assets["total"] = total_investment_value
     
     if chart_data["cumulative_values"]:
