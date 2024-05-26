@@ -4,7 +4,8 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta
 from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Value as V, DecimalField
+from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from investments.models import BuyStockHistory, SellStockHistory, StockAssets
 
@@ -34,7 +35,7 @@ def get_date_range(user): # arg = request.user
 # gets each date where something happened and gives the overall ending value for that date
 def aggregate_stock_values(user):
     data = {}
-
+    ### FIX THESE ####
     buy_data = BuyStockHistory.objects.filter(user=user).values("buy_date").annotate(total_value=Sum(F("stock_value_amount") * F("stock_purchased_count")))
     sell_data = SellStockHistory.objects.filter(user=user).values("sell_date").annotate(total_value=Sum(F("stock_value_amount") * F("stock_sold_count")))
     
@@ -117,8 +118,14 @@ def home(request):
     
     investment_assets = {}
     # for total investments text display
-    total_investment_result = StockAssets.objects.filter(user = request.user).aggregate(total_investment=Sum(F("stock_value_amount") * F("stock_count")) * 100 / 100)
-    total_investment_value = int(total_investment_result['total_investment'] * 100) / 100 or 0
+    total_investment_result = StockAssets.objects.filter(user = request.user).aggregate(total_investment=Coalesce(Sum(F("stock_value_amount") * F("stock_count")), V(0, output_field=DecimalField(decimal_places=2))))
+    total_gotten = total_investment_result['total_investment']
+    if total_gotten == 0:
+        total_investment_value = 0
+    else:
+        total_gotten = float(total_gotten)
+        total_investment_value = int(total_gotten * 100) / 100
+    
     investment_assets["total"] = total_investment_value
     
     if chart_data["cumulative_values"]:

@@ -24,6 +24,7 @@ urlpatterns = [
     path ("", include("authapp.urls")),
     path("", include("navbarapp.urls")),
     path("", include("homeapp.urls")),
+    path("", include("investments.urls")),
  ]
 
 urlpatterns += staticfiles_urlpatterns()
