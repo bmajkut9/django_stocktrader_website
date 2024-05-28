@@ -39,16 +39,15 @@ def update_stock_assets(sender, instance, created, **kwargs):
             cash_assets.cash_amount += total_cost
             cash_assets.save()
             
+            # this is necessary because it give stock_asset a value, even though a new entry will never be created
             stock_asset, new_entry = StockAssets.objects.get_or_create(
                 user = instance.user,
                 ticker = instance.ticker,
                 defaults = {
-                    'stock_value_amount': -instance.stock_value_amount,
                     'stock_count': -instance.stock_sold_count
                 }
             )
             if not new_entry:
-                stock_asset.stock_value_amount -= instance.stock_value_amount
                 stock_asset.stock_count -= instance.stock_sold_count
                 stock_asset.save()
             

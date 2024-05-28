@@ -1,0 +1,20 @@
+{% extends "base.html" %} {% block title %} Home {% endblock %}
+{% block content %}
+
+<h1>Display Cash, Change cash, Show net profits, Ticker lookup</h1>
+<div class="container mt-5">
+    <h2>Enter Ticker Symbol</h2>
+    <form method="post" action="{% url 'Investments'%}" >
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="ticker">Ticker</label>
+            <div class="row">
+                <input type="text" class="form-control" id="ticker" name="ticker" placeholder="Enter ticker symbol">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

@@ -35,7 +35,6 @@ def get_date_range(user): # arg = request.user
 # gets each date where something happened and gives the overall ending value for that date
 def aggregate_stock_values(user):
     data = {}
-    ### FIX THESE ####
     buy_data = BuyStockHistory.objects.filter(user=user).values("buy_date").annotate(total_value=Sum(F("stock_value_amount") * F("stock_purchased_count")))
     sell_data = SellStockHistory.objects.filter(user=user).values("sell_date").annotate(total_value=Sum(F("stock_value_amount") * F("stock_sold_count")))
     
@@ -56,7 +55,7 @@ def aggregate_stock_values(user):
     sorted_data = dict(sorted(data.items()))
     return sorted_data 
             
-
+@login_required
 def home(request):
     chart_dates_config = {}
     chart_dates_config["min_date"], chart_dates_config["max_date"], chart_dates_config["unit_type"] = get_date_range(request.user)
