@@ -1,19 +1,44 @@
 {% extends "base.html" %} {% block title %} Home {% endblock %}
 {% block content %}
 
-<h1>Display Cash, Change cash, Show net profits, Ticker lookup</h1>
 <div class="container mt-5">
-    <h2>Enter Ticker Symbol</h2>
-    <form method="post" action="{% url 'Investments'%}" >
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="ticker">Ticker</label>
-            <div class="row">
-                <input type="text" class="form-control" id="ticker" name="ticker" placeholder="Enter ticker symbol">
-                <button type="submit" class="btn btn-primary">Search</button>
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <div class="container">
+                    <div class="col">
+                        <p>Cash assets: ${{cash_amount}}</p>
+                        <h4>Add or subtract cash</h4>
+                        <p>Total cash withdrawn: ${{total_cash_withdrawn}}</p>
+                        <p>Cash spent: ${{total_spent}}</p>
+                        <p>Current stock assets: ${{stock_assets_value}}</p>
+                        <p>Stock sold value: ${{stock_sold_value}}</p>
+                        <p>Stock bought value: $!!!</p>
+                        <h4>Net profits</h4>
+                        <p>Net profit/loss: ${{net_profit_loss}}</p>
+                        <p>% Net profit/loss: $!!!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <form method="post" action="{% url 'Investments'%}" >
+                    {% csrf_token %}
+                    <div class="form-group margin-right-5px">
+                        <label for="ticker">Ticker Search</label>
+                        <div class="form-row">  
+                            <div class="col">                    
+                                <input type="text" class="form-control" id="ticker" name="ticker" placeholder="Enter ticker symbol">
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <h4>Owned stocks</h4>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 
