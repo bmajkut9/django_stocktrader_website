@@ -1,33 +1,55 @@
 {% extends "base.html" %} {% block title %} Home {% endblock %}
 {% block content %}
 
+<style>
+    .spinner {
+        display: flex;
+        align-items: center;
+    }
+    .spinner input {
+        text-align: center;
+        max-width: 60px;
+        margin: 0 6px;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="col">
         <div class="row">
             <div class="col">
                 <div class="container">
-                    <div class="col">
+                    <div class="col border">
+                        <div class="row border">
+                            <h4>Cash</h4>
+                            <div class="spinner">
+                                <button class="btn btn-danger" id="decrement">-</button>
+                                <input type="number" id="spinner-value" class="form-control" value="0" min="0" max="100"
+                                    readonly>
+                                <button class="btn btn-success" id="increment">+</button>
+                            </div>
+                        </div>
                         <p>Cash assets: ${{cash_amount}}</p>
-                        <h4>Add or subtract cash</h4>
-                        <p>Total cash withdrawn: ${{total_cash_withdrawn}}</p>
                         <p>Cash spent: ${{total_spent}}</p>
+                        <p>Total cash withdrawn: ${{total_cash_withdrawn}}</p>
+                        <h4>Stocks</h4>
                         <p>Current stock assets: ${{stock_assets_value}}</p>
                         <p>Stock sold value: ${{stock_sold_value}}</p>
-                        <p>Stock bought value: $!!!</p>
+                        <p>Stock bought value: ${{stock_bought_value}}</p>
                         <h4>Net profits</h4>
                         <p>Net profit/loss: ${{net_profit_loss}}</p>
-                        <p>% Net profit/loss: $!!!</p>
+                        <p>Net profit/loss percent: %{{net_percent}}</p>
                     </div>
                 </div>
             </div>
             <div class="col">
-                <form method="post" action="{% url 'Investments'%}" >
+                <form method="post" action="{% url 'Investments'%}">
                     {% csrf_token %}
                     <div class="form-group margin-right-5px">
                         <label for="ticker">Ticker Search</label>
-                        <div class="form-row">  
-                            <div class="col">                    
-                                <input type="text" class="form-control" id="ticker" name="ticker" placeholder="Enter ticker symbol">
+                        <div class="form-row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="ticker" name="ticker"
+                                    placeholder="Enter ticker symbol">
                             </div>
                             <div class="col">
                                 <button type="submit" class="btn btn-primary">Search</button>
