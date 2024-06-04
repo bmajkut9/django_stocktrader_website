@@ -1,3 +1,4 @@
+from .forms import AddCashForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import DatabaseError
@@ -68,11 +69,27 @@ def ticker_search_view(request, ticker):
     return render(request, "ticker_search.html", {"ticker": ticker})
 
 
-def investments_view(request):
+def investments_view(request):    
     if request.method == "POST":
-        ticker = request.POST.get("ticker")
-        return redirect("ticker_search", ticker=ticker)
-    
+        if 'search_ticker' in request.POST:
+            ticker = request.POST.get("search_ticker")
+            print("ticker is", ticker)
+            return redirect("ticker_search", ticker=ticker)
+        
+        elif 'add_cash' in request.POST:
+            add_cash_form = AddCashForm(request.POST)
+            if add_cash_form.is_valid():
+                amount = add_cash_form.cleaned_data['add_cash']
+                print("the amount is", amount)
+                add_cash(request.user, amount)
+                return redirect('investments')
+            else:
+                print("not valid")
+                print("Form errors:", add_cash_form.errors)
+                print(add_cash_form)
+            
+            
+            
     cash_amount, total_spent, total_cash_withdrawn, stock_assets_value,stock_bought_value, stock_sold_value, net_profit_loss, net_percent = get_cash_stats(request.user)
     
     context = {

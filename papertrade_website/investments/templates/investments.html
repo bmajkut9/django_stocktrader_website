@@ -17,7 +17,7 @@
                         <div class="container">
                             <div class="row">
                                 <h4>Cash</h4>
-                            
+
                             </div>
                         </div>
                         <p>Cash assets: ${{cash_amount}}</p>
@@ -34,28 +34,32 @@
                 </div>
             </div>
             <div class="col">
-                <form method="post" action="{% url 'Investments'%}">
+                <form method="post" action="{% url 'investments' %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="cash-insert">Add Cash</label>
-                        <div class="input-group">
+                        <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">$</span>
                             </div>
-                            <input type="text" id="cash-input" class="form-control" value="0" min="0" maxlength="16">
+                            <input name="add_cash" type="text" class="form-control" min="0" maxlength="16">
                             <div class="input-group-append">
                                 <span class="input-group-text">.00</span>
                             </div>
                             <div class="col">
-                                <button class="btn btn-success" id="increment">Add cash</button>
+                                <button type="submit" class="btn btn-success">Add cash</button>
                             </div>
                         </div>
                     </div>
+                </form>
+
+                <form method="post" action="{% url 'investments' %}">
+                    {% csrf_token %}
                     <div class="form-group">
                         <label for="ticker">Ticker Search</label>
                         <div class="form-row">
                             <div class="col">
-                                <input type="text" class="form-control" id="ticker" name="ticker"
+                                <input type="text" class="form-control" name="search_ticker"
                                     placeholder="Enter ticker symbol">
                             </div>
                             <div class="col">
@@ -81,7 +85,7 @@
 </div>
 
 <script>
-    
+
 </script>
 
 
