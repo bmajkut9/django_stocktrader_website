@@ -2,6 +2,7 @@ import requests
 import json
 from django.utils.safestring import mark_safe
 from datetime import timedelta
+import yfinance as yf
 from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
 from django.db.models import Sum, F, Value as V, DecimalField
@@ -80,11 +81,46 @@ def home(request):
     print("chart data safe", chart_data_json_safe)
     
     
+
+    
+    user = request.user 
+    stock_assets = StockAssets.objects.filter(user=user)
+    
+    # update data with yfinance
+    updated_stock_prices = {}
+    for asset in stock_assets:
+        ticker = asset.ticker
+        stock = yf.Ticker(ticker)
+        current_price = stock.info['currentPrice'] if 'currentPrice' in stock.info else 0
+        
+        if current_price is not 0:
+            asset.stock_value_amount = current_price
+            asset.save()
+            
+            updated_stock_prices[ticker] = current_price
+        else:
+            updated_stock_prices[ticker] = 'Price not available'
+    
+    print("updated stock prices", updated_stock_prices)
+        
     
     
-    gainers = []
-    losers = []
-    mostActive = []
+    # collect stock data
+    investments_display_data_home = []
+    
+    for asset in stock_assets:
+        total_value = asset.stock_value_amount * asset.stock_count
+        investments_display_data_home.append({
+            'ticker': asset.ticker,
+            'price': asset.stock_value_amount,
+            'total_value': total_value,
+        })
+        
+    print("investments display data:", investments_display_data_home)
+
+
+
+
 
         
     news_url = "https://finance.yahoo.com/"
@@ -144,9 +180,7 @@ def home(request):
             "chart_dates_config": chart_dates_config, 
             "chart_data": chart_data_json_safe, 
             "investment_assets": investment_assets, 
-            "gainers": gainers, 
-            "losers": losers, 
-            "mostActive": mostActive, 
+            "investments_display_data_home": investments_display_data_home,
             "articles": articles})
     else:
         return redirect("login")

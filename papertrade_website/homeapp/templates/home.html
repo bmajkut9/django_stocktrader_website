@@ -42,108 +42,70 @@
             </div>
             <div class="row">
                 <h1>${{ investment_assets.total }}</h1>
-                <h3 style="margin-left: 10px">{{ investment_assets.change_percentage  }}%</h3>
+                <h3 style="margin-left: 10px">{{ investment_assets.change_percentage }}%</h3>
                 {% if investment_assets.change_percentage > 0 %}
-                    <div class="triangle-up" style="margin-left: 5px; margin-bottom: auto;"></div> 
+                <div class="triangle-up" style="margin-left: 5px; margin-bottom: auto;"></div>
                 {% else %}
-                    {% if investment_assets.change_percentage < 0 %}
-                    <div class="triangle-down" style="margin-left: 5px; margin-bottom: auto;"></div>
-                    {% else %}
-                    <!-- no change percentage yet -->
-                    {% endif %}
-                {% endif %}
+                {% if investment_assets.change_percentage < 0 %} <div class="triangle-down"
+                    style="margin-left: 5px; margin-bottom: auto;">
             </div>
-            <div>
-                <canvas style="width: 100%" id="myChart"></canvas>
-            </div>
-            <div style="height: 20px;"></div>
-            <h4>News and Sentiments</h4>
-            <div class="row">
-                {% for article in articles %}
-                <a href="{{article.link}}">
-                    <div class="container border"
-                        style="width: 200px; margin-left: 20px; margin-right: 20px; justify-content: center;">
-                        <div class="col" style="justify-content: center;">
-                            <div class="container border" style="width: 100%; height: 100px; border-radius: 10px;">
-                                <img src="{{article.image}}"
-                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
-                            </div>
-                            <p class="title-text border">{{article.title}}</p>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
+            {% else %}
+            <!-- no change percentage yet -->
+            {% endif %}
+            {% endif %}
         </div>
-        <div style="width: 60px;"></div>
-        <div class="ml-auto">
-            <a href="/investments/">
-                <button class="btn btn-success w-100 border" style="margin-top: 30px; margin-bottom: 20px; border-width: 3px !important; 
-                    border-color: lightgreen !important; height: 70px; border-radius: 16px;">INVEST</button>
-            </a>
-            <div class="container border" style="border-width: 3px !important; border-radius: 20px;">
-                <div class="dropdown"
-                    style="display: flex; justify-content: center; width: 100%; margin-top: 15px; margin-bottom: 15px;">
-                    <button class="btn dropdown-toggle" style="background-color: #dee2e6;" type="button"
-                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Most Active
-                    </button>
-                    <div class="dropdown-menu" style="margin-left: auto; margin-right: auto;"
-                        aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" onclick="showData('gainers', 'Biggest Gainers')">Biggest
-                            Gainers</a>
-                        <a class="dropdown-item" onclick="showData('losers', 'Biggest Losers')">Biggest Losers</a>
-                        <a class="dropdown-item" onclick="showData('mostActive', 'Most Active')">Most Active</a>
+        <div>
+            <canvas style="width: 100%" id="myChart"></canvas>
+        </div>
+        <div style="height: 20px;"></div>
+        <h4>News and Sentiments</h4>
+        <div class="row">
+            {% for article in articles %}
+            <a href="{{article.link}}">
+                <div class="container border"
+                    style="width: 200px; margin-left: 20px; margin-right: 20px; justify-content: center;">
+                    <div class="col" style="justify-content: center;">
+                        <div class="container border" style="width: 100%; height: 100px; border-radius: 10px;">
+                            <img src="{{article.image}}"
+                                style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        </div>
+                        <p class="title-text border">{{article.title}}</p>
                     </div>
                 </div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Ticker</th>
-                            <th scope="col">% Change</th>
-                            <th scope="col">Trend</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gainers" style="display: none;">
-                        {% for gainer in gainers %}
-                        <tr>
-                            <th scope="row">{{gainer.symbol}}</th>
-                            <td>{{gainer.change_percentage}}</td>
-                            <td>
-                                <div class="triangle-up"></div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tbody id="losers" style="display: none;">
-                        {% for loser in losers %}
-                        <tr>
-                            <th scope="row">{{loser.symbol}}</th>
-                            <td>{{loser.change_percentage}}</td>
-                            <td>
-                                <div class="triangle-down"></div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tbody id="mostActive">
-                        {% for active in mostActive %}
-                        <tr>
-                            <th scope="row">{{active.symbol}}</th>
-                            <td>{{active.change_percentage}}</td>
-                            <td>{% if active.change_percentage >= 0 %}
-                                <div class="triangle-up"></div>
-                                {% else %}
-                                <div class="triangle-down"></div>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            </a>
+            {% endfor %}
         </div>
     </div>
+    <div style="width: 60px;"></div>
+    <div class="ml-auto">
+        <a href="/investments/">
+            <button class="btn btn-success w-100 border" style="margin-top: 30px; margin-bottom: 20px; border-width: 3px !important; 
+                    border-color: lightgreen !important; height: 70px; border-radius: 16px;">INVEST</button>
+        </a>
+        <div class="container text-center">
+            <h5>Owned Stocks</h5>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Ticker</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Total Value</th>
+                </tr>
+            </thead>
+            <tbody id="investments_display_data_home">
+                {% for investment in investments_display_data_home %}
+                <tr>
+                    <th scope="row">{{investment.ticker}}</th>
+                    <td>{{investment.price}}</td>
+                    <td>{{investment.total_value}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
 </div>
 <script>
 
