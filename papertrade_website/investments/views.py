@@ -58,7 +58,6 @@ def get_cash_stats(user):
     net_percent = f"{unformatted_net_percent:.2f}"
     
     
-    
     return cash_amount, total_spent, total_cash_withdrawn, stock_assets_value, stock_bought_value, stock_sold_value, net_profit_loss, net_percent
 
 # Create your views here.
@@ -92,6 +91,25 @@ def investments_view(request):
             
     cash_amount, total_spent, total_cash_withdrawn, stock_assets_value,stock_bought_value, stock_sold_value, net_profit_loss, net_percent = get_cash_stats(request.user)
     
+    user = request.user 
+    stock_assets = StockAssets.objects.filter(user=user)
+    
+    investments_display_data = []
+    
+    for asset in stock_assets:
+        total_value = asset.stock_value_amount * asset.stock_count
+        investments_display_data.append({
+            'ticker': asset.ticker,
+            'price': asset.stock_value_amount,
+            'total_value': total_value,
+            #'daily_change_percentage': yfiancecode
+        })
+        
+    print("investments display data:", investments_display_data)
+        
+    
+    
+    
     context = {
         "cash_amount": cash_amount,
         "total_spent": total_spent, 
@@ -101,6 +119,7 @@ def investments_view(request):
         "stock_sold_value": stock_sold_value, 
         "net_profit_loss": net_profit_loss,
         "net_percent": net_percent,
+        "investments_display_data": investments_display_data
         }
     
     return render(request, "investments.html", context)

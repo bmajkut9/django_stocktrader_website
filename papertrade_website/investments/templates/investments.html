@@ -74,9 +74,26 @@
                         <tr>
                             <th scope="col">Ticker</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Value</th>
-                            <th scope="col">% Change</th>
+                            <th scope="col">Total Value</th>
+                            <th scope="col">Daily Change</th>
                             <th scope="col">Trend</th>
+                        <tbody id="investments_display">
+                        {% for investment in investments_display_data %}
+                            <tr>
+                                <th scope="row">{{investment.ticker}}</th>
+                                <td>{{investment.price}}</td>
+                                <td>{{investment.total_value}}</td>
+                                <!--
+                                <td>{{investment.daily_change_percentage}}</td>
+                                <td>{% if investment.daily_change_percentage >= 0 %}
+                                    <div class="triangle-up"></div>
+                                    {% else %}
+                                    <div class="triangle-down"></div>
+                                    {% endif %}
+                                </td>
+                                -->
+                            </tr>
+                        {% endfor %}
                         </tr>
                     </thead>
             </div>
