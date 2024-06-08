@@ -1,17 +1,6 @@
 {% extends "base.html" %} {% block title %} Home {% endblock %}
 {% block content %}
 
-<script>
-    function showData(type, text) {
-        document.getElementById('gainers').style.display = 'none';
-        document.getElementById('losers').style.display = 'none';
-        document.getElementById('mostActive').style.display = 'none';
-
-        document.getElementById(type).style.display = '';
-        document.getElementById('dropdownMenuButton').textContent = text;
-    }
-</script>
-
 <style>
     .triangle-up {
         width: 0;
@@ -108,14 +97,12 @@
 </div>
 </div>
 <script>
-
     const roundedBackgroundPlugin = {
         id: 'roundedBackground',
         beforeDraw: (chart) => {
             const ctx = chart.ctx;
             const chartArea = chart.chartArea;
             const radius = 20; // Adjust the radius for the desired roundness
-
             ctx.save();
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; // Background color
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)'; // Border color
@@ -169,14 +156,6 @@
     Chart.register(roundedBackgroundPlugin);
 
     const ctx = document.getElementById('myChart');
-    /*console.log("{{ chart_data.dates }}");
-    console.log("{{chart_data}}");
-    const dates = JSON.parse("{{ chart_data.dates|safe }}");
-    console.log("dates are");
-    console.log(dates);*/
-    //const cumulativeValues = JSON.parse('{{ chart_data.cumulative_values|escapejs }}');
-    //console.log("values are")
-    //console.log(cumulativeValues)
     const chartData = JSON.parse('{{ chart_data|safe }}');
     console.log(chartData);
 

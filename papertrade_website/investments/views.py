@@ -2,6 +2,8 @@ from .forms import AddCashForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import DatabaseError
+import datetime as datetime
+import json
 from django.db.models.functions import Coalesce
 from .models import CashAssets, BuyStockHistory, SellStockHistory, StockAssets
 from django.db.models import Sum, F, Value as V, DecimalField
@@ -64,8 +66,52 @@ def get_cash_stats(user):
 
 
 def ticker_search_view(request, ticker):
-        #return HttpResponse(f"Ticker entered: {ticker}")
-    return render(request, "ticker_search.html", {"ticker": ticker})
+    stock = yf.Ticker(ticker)
+    info = stock.info
+    hist = stock.history(period='max')
+    
+    dates = hist.index.to_pydatetime()
+    filtered_dates = []
+    filtered_values = []
+    year_labels = []
+
+    for i, date in enumerate(dates):
+        if i == 0 or (date.month != dates[i - 1].month or date.year != dates[i - 1].year):
+            filtered_dates.append(date.strftime('%Y-%m-%d'))
+            filtered_values.append(hist['Close'].iloc[i])
+            # Add year label only for the first month of the year
+            if date.month == 1:
+                year_labels.append(date.strftime('%Y'))
+            else:
+                year_labels.append('')
+
+    chartData = {
+        'dates': filtered_dates,
+        'values': filtered_values,
+        'year_labels': year_labels,
+    }
+    print(chartData)
+    
+    importantData = {
+        "name": info.get("shortName"),
+        "industry": info.get("industryDisp"),
+        "sector": info.get("sectorDisp"),
+        "longDescription": info.get("longBusinessSummary"),
+        "currentPrice": info.get("currentPrice"),
+        "marketCap": info.get("marketCap"),
+        "trailingPE": info.get("trailingPE"),
+        "forwardPE": info.get("forwardPE"),
+        "trailingEps": info.get("trailingEps"),
+        "dividendYield": info.get("dividendYield"),
+        "beta": info.get("beta"),
+        "totalRevenue": info.get("totalRevenue"),
+        "grossMargins": info.get("grossMargins"),
+        "operatingMargins": info.get("operatingMargins"),
+        "profitMargins": info.get("profitMargins"),
+        "fiftyTwoWeekHigh": info.get("fiftyTwoWeekHigh"),
+        "fiftyTwoWeekLow": info.get("fiftyTwoWeekLow")
+    }
+    return render(request, "ticker_search.html", {"ticker": ticker, "importantData": importantData, "chartData": json.dumps(chartData)})
 
 
 def investments_view(request):    

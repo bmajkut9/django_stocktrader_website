@@ -6,6 +6,7 @@ import yfinance as yf
 from bs4 import BeautifulSoup
 from django.shortcuts import render, redirect
 from django.db.models import Sum, F, Value as V, DecimalField
+from decimal import Decimal, ROUND_DOWN
 from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from investments.models import BuyStockHistory, SellStockHistory, StockAssets
@@ -93,7 +94,8 @@ def home(request):
         stock = yf.Ticker(ticker)
         current_price = stock.info['currentPrice'] if 'currentPrice' in stock.info else 0
         
-        if current_price is not 0:
+        if current_price != 0:
+            current_price = Decimal(current_price).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
             asset.stock_value_amount = current_price
             asset.save()
             
@@ -108,8 +110,8 @@ def home(request):
     # collect stock data
     investments_display_data_home = []
     
-    for asset in stock_assets:
-        total_value = asset.stock_value_amount * asset.stock_count
+    for asset in stock_assets: 
+        total_value = (asset.stock_value_amount * asset.stock_count).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
         investments_display_data_home.append({
             'ticker': asset.ticker,
             'price': asset.stock_value_amount,

@@ -1,9 +1,228 @@
 {% extends "base.html" %} {% block title %} Home {% endblock %}
 {% block content %}
+<div class="container">
+    <div class="col">
+        <div class="col">
+            <h1>{{ importantData.name }} ({{ ticker }}): ${{ importantData.currentPrice }}</h1>
+        </div>
+        <div class="col border">
+            <div class="container mt-3 w-auto">
+                <div class="row border justify-content-start">
+                    <div class="d-inline-block border">
+                        <table class="table table-striped table-bordered w-auto">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Attribute</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>{{ importantData.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Industry</td>
+                                    <td>{{ importantData.industry }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Sector</td>
+                                    <td>{{ importantData.sector }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Current Price</td>
+                                    <td>{{ importantData.currentPrice }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Market Cap</td>
+                                    <td>{{ importantData.marketCap }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Trailing PE</td>
+                                    <td>{{ importantData.trailingPE }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Forward PE</td>
+                                    <td>{{ importantData.forwardPE }}</td>
+                                </tr>
+                                <tr>
+                                    <td>52-Week High</td>
+                                    <td>{{ importantData.fiftyTwoWeekHigh }}</td>
+                                </tr>
+                                <tr>
+                                    <td>52-Week Low</td>
+                                    <td>{{ importantData.fiftyTwoWeekLow }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Trailing EPS</td>
+                                    <td>{{ importantData.trailingEps }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Dividend Yield</td>
+                                    <td>{{ importantData.dividendYield }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Beta</td>
+                                    <td>{{ importantData.beta }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Revenue</td>
+                                    <td>{{ importantData.totalRevenue }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Gross Margins</td>
+                                    <td>{{ importantData.grossMargins }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Operating Margins</td>
+                                    <td>{{ importantData.operatingMargins }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Profit Margins</td>
+                                    <td>{{ importantData.profitMargins }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <canvas style="width: 100%; height: 300px;" id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <p>{{ importantData.longDescription }}</p>
+        </div>
+    </div>
+</div>
 
-<h1>test</h1>
-<h1>{{ticker}}</h1>
+<script>
+    const roundedBackgroundPlugin = {
+        id: 'roundedBackground',
+        beforeDraw: (chart) => {
+            const ctx = chart.ctx;
+            const chartArea = chart.chartArea;
+            const radius = 20;
 
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left + radius, chartArea.top);
+            ctx.lineTo(chartArea.right - radius, chartArea.top);
+            ctx.quadraticCurveTo(chartArea.right, chartArea.top, chartArea.right, chartArea.top + radius);
+            ctx.lineTo(chartArea.right, chartArea.bottom - radius);
+            ctx.quadraticCurveTo(chartArea.right, chartArea.bottom, chartArea.right - radius, chartArea.bottom);
+            ctx.lineTo(chartArea.left + radius, chartArea.bottom);
+            ctx.quadraticCurveTo(chartArea.left, chartArea.bottom, chartArea.left, chartArea.bottom - radius);
+            ctx.lineTo(chartArea.left, chartArea.top + radius);
+            ctx.quadraticCurveTo(chartArea.left, chartArea.top, chartArea.left + radius, chartArea.top);
+            ctx.closePath();
+
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.save();
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.lineWidth = 1;
+
+
+            const yGridLineCount = chart.scales.y.ticks.length;
+            for (let i = 1; i < yGridLineCount - 1; i++) {
+                const y = chart.scales.y.getPixelForTick(i);
+                ctx.beginPath();
+                ctx.moveTo(chartArea.left, y);
+                ctx.lineTo(chartArea.right, y);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+    };
+
+    Chart.register(roundedBackgroundPlugin);
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const chartData = JSON.parse('{{ chartData|safe }}');
+
+    const dates = chartData.dates || [];
+    const values = chartData.values || [];
+    const yearLabels = chartData.year_labels || [];
+
+    const displayedYears = new Set();
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: yearLabels,
+            datasets: [{
+                label: '{{ importantData.name }} Stock Price',
+                data: values,
+                fill: false,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBorderColor: 'rgba(75, 192, 192, 1)',
+                pointBorderWidth: 1,
+                pointRadius: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
+                pointHoverBorderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: false,
+                    },
+                    grid: {
+                        display: false,
+                    },
+                    border: {
+                        display: false,
+                    },
+                    ticks: {
+                        callback: function (value, index, ticks) {
+                                const date = new Date(dates[index]);
+                                const year = date.getFullYear();
+                                if (date.getMonth() === 0 && year % 5 === 0 && !displayedYears.has(year)) {
+                                    displayedYears.add(year); 
+                                    return year;
+                                } else {
+                                    return '';
+                                }
+                            },
+                        autoSkip: false,
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Value $USD',
+                    },
+                    grid: {
+                        display: false,
+                    },
+                    border: {
+                        display: false,
+                    }
+                }
+            }
+        }
+    });
+</script>
 
 
 {% endblock %}
