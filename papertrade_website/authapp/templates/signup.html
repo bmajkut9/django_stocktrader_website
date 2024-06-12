@@ -2,34 +2,33 @@
 {% block content %}
 
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="flex-container" style="width: fit-content; margin-left: auto; margin-right: auto">
-            <h6>Start learning with</h6>
-            <h1 style="text-align: center; color: #FFE07D;">Paper Paradise</h1>
-        </div>
-        <div class="flex-container"
-            style="margin-left: auto; margin-right: auto; border: 2px solid #FFE07D; border-radius: 20px; height: 350px; width: 500px;">
-            <div class="d-flex flex-column justify-content-center w-100 h-100"
-                style="padding-left: 30px; padding-right: 30px;">
-                <form class="form-group" method="POST">
-                    {% csrf_token %}
-                    <p>Username</p>
-                    <input type="text" name="username" class="form-control"
-                        value="{{ form.username.value|default_if_none:'' }}" placeholder="Username or email">
-                    <p>{{ form.username.errors }}</p>
-                    <p>Password</p>
-                    <input type="password" name="password1" class="form-control" placeholder="Password">
-                    <p>{{ form.password1.errors }}</p>
-                    <input type="password" name="password2" class="form-control" placeholder="Confirm password">
-                    <p>{{ form.password2.errors }}</p>
-                    <div class="border"
-                        style="width: 300px; margin-left: auto; margin-right: auto; margin-top: 30px; margin-bottom: 30px;">
-                    </div>
-                    <button class="btn w-100" type="submit" style="background-color: #FFE07D;">Sign up</button>
-                </form>
-            </div>
+    <div class="flex-container" style="width: fit-content; margin-left: auto; margin-right: auto">
+        <h6>Start learning with</h6>
+        <h1 style="text-align: center; color: #FFE07D;">Paper Paradise</h1>
+    </div>
+    <div class="flex-container"
+        style="margin-left: auto; margin-right: auto; border: 2px solid #FFE07D; border-radius: 20px; height: 350px; width: 500px;">
+        <div class="d-flex flex-column justify-content-center w-100 h-100"
+            style="padding-left: 30px; padding-right: 30px;">
+            <form class="form-group" method="POST">
+                {% csrf_token %}
+                <p>Username</p>
+                <input type="text" name="username" class="form-control"
+                    value="{{ form.username.value|default_if_none:'' }}" placeholder="Username or email">
+                <p>{{ form.username.errors }}</p>
+                <p>Password</p>
+                <input type="password" name="password1" class="form-control" placeholder="Password">
+                <p>{{ form.password1.errors }}</p>
+                <input type="password" name="password2" class="form-control" placeholder="Confirm password">
+                <p>{{ form.password2.errors }}</p>
+                <div class="border"
+                    style="width: 300px; margin-left: auto; margin-right: auto; margin-top: 30px; margin-bottom: 30px;">
+                </div>
+                <button class="btn w-100" type="submit" style="background-color: #FFE07D;">Sign up</button>
+            </form>
         </div>
     </div>
+
 </div>
 
 {% endblock%}

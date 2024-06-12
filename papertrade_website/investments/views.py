@@ -1,4 +1,4 @@
-from .forms import AddCashForm
+from .forms import AddCashForm, BuyForm, SellForm
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.db import DatabaseError
@@ -8,6 +8,7 @@ from django.db.models.functions import Coalesce
 from .models import CashAssets, BuyStockHistory, SellStockHistory, StockAssets
 from django.db.models import Sum, F, Value as V, DecimalField
 import yfinance as yf
+from decimal import Decimal, ROUND_HALF_UP
 
 def add_cash(user, amount):
     # +amount if adding and -amount if subtracting
@@ -65,7 +66,39 @@ def get_cash_stats(user):
 # Create your views here.
 
 
-def ticker_search_view(request, ticker):
+def ticker_search_view(request, ticker=None):
+    if request.method == 'POST':
+        stock_amount = request.POST.get('stock_amount')
+        action = request.POST.get('action')
+
+        if action == 'buy':
+            form = BuyForm(request.POST)
+            if form.is_valid():
+                stock_amount = form.cleaned_data['stock_amount']
+                price = yf.Ticker(ticker).info.get("currentPrice")
+                ticker = yf.Ticker(ticker).info.get("symbol")
+                if price is not None:
+                    price_decimal = Decimal(price).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+                    
+                BuyStockHistory.objects.create(
+                    user=request.user, 
+                    stock_purchased_count=stock_amount, 
+                    stock_value_amount=price_decimal, 
+                    ticker=ticker
+                    )
+                
+                return redirect('investments')
+            
+     
+        elif action == 'sell':
+            form = SellForm(request.POST)
+            if form.is_valid():
+                stock_amount = form.cleaned_data['stock_amount']
+        
+    else:
+        buy_form = BuyForm()
+        sell_form = SellForm()
+        
     stock = yf.Ticker(ticker)
     info = stock.info
     hist = stock.history(period='max')
@@ -158,7 +191,7 @@ def investments_view(request):
             ticker = request.POST.get("search_ticker")
             print("ticker is", ticker)
             return redirect("ticker_search", ticker=ticker)
-        
+         
         elif 'add_cash' in request.POST:
             add_cash_form = AddCashForm(request.POST)
             if add_cash_form.is_valid():

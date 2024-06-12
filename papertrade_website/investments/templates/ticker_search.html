@@ -5,21 +5,22 @@
         <div class="col">
             <div class="row align-items-center">
                 <h1 class="ml-3 mt-4 mb-4">{{importantData.ticker }}: ${{ importantData.currentPrice }}</h1>
-                <form id="stock-transaction-form">
+                <form id="stock-transaction-form" method="post" action="">
+                    {% csrf_token %}
                     <div class="form-row ml-4">
-                        <div class="form-row">
-                            <div class="col">
-                                <input type="text" class="form-control" id="stock-amount" name="stock_amount" placeholder="Enter stock amount" required>
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-success" id="buy-button">Buy</button>
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-danger" id="sell-button">Sell</button>
-                            </div>
+                        <div class="col">
+                            <input type="text" class="form-control" id="stock-amount" name="stock_amount"
+                                placeholder="Enter stock amount" required>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-success" name="action" value="buy"
+                                id="buy-button">Buy</button>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-danger" name="action" value="sell"
+                                id="sell-button">Sell</button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </div>
