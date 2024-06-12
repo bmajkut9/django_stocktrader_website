@@ -69,7 +69,9 @@ def ticker_search_view(request, ticker):
     stock = yf.Ticker(ticker)
     info = stock.info
     hist = stock.history(period='max')
-    
+
+
+
     dates = hist.index.to_pydatetime()
     filtered_dates = []
     filtered_values = []
@@ -90,10 +92,46 @@ def ticker_search_view(request, ticker):
         'values': filtered_values,
         'year_labels': year_labels,
     }
-    print(chartData)
+    
+    
+    
+    three_month_hist = stock.history(period='3mo')
+    three_month_dates = three_month_hist.index.to_pydatetime()
+
+    three_month_filtered_dates = []
+    three_month_filtered_values = []
+    three_month_week_labels = []
+
+    current_week = None
+
+    for i, date in enumerate(three_month_dates):
+        three_month_filtered_dates.append(date.strftime('%Y-%m-%d'))
+        three_month_filtered_values.append(three_month_hist['Close'].iloc[i])
+        
+        # Get the ISO week number
+        week_number = date.isocalendar()[1]
+        
+        # Check if it's the first trading day of a new week
+        if week_number != current_week:
+            three_month_week_labels.append(date.strftime('%m/%d'))
+            current_week = week_number
+        else:
+            three_month_week_labels.append('')
+
+
+    # Prepare chart data
+    three_month_chartData = {
+        'dates': three_month_filtered_dates,
+        'values': three_month_filtered_values,
+        'week_labels': three_month_week_labels,
+    }
+    
+    print("weeklabels: ", three_month_chartData['week_labels'])
+    
     
     importantData = {
         "name": info.get("shortName"),
+        "ticker": info.get("symbol"),
         "industry": info.get("industryDisp"),
         "sector": info.get("sectorDisp"),
         "longDescription": info.get("longBusinessSummary"),
@@ -111,7 +149,7 @@ def ticker_search_view(request, ticker):
         "fiftyTwoWeekHigh": info.get("fiftyTwoWeekHigh"),
         "fiftyTwoWeekLow": info.get("fiftyTwoWeekLow")
     }
-    return render(request, "ticker_search.html", {"ticker": ticker, "importantData": importantData, "chartData": json.dumps(chartData)})
+    return render(request, "ticker_search.html", {"ticker": ticker, "importantData": importantData, "chartData": json.dumps(chartData), "three_month_chartData": json.dumps(three_month_chartData) })
 
 
 def investments_view(request):    
