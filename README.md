@@ -1,0 +1,5 @@
+![Homepage](images/homepage_ss.png)
+![Investments](images/investments_ss.png)
+![Search](images/ticker_search_ss.png)
+![Login](images/login_ss.png)
+![Sign up](images/signup_ss.png)
